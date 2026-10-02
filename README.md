@@ -59,4 +59,4 @@ Si el MVP demuestra uso real, el siguiente paso sería definir autenticación, c
 
 ## Créditos
 
-Ilustración de portada generada para este prototipo. Los nombres y fichas del directorio son ejemplos de interfaz y deben verificarse antes de publicar como servicios reales.
+Logo proporcionado por el proyecto e ilustración de portada generada para este prototipo. Los nombres y fichas del directorio son ejemplos de interfaz y deben verificarse antes de publicar como servicios reales.
