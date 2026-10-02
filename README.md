@@ -9,6 +9,7 @@ Prototipo navegable de una plataforma de educación inclusiva, basado en las vis
 - Educación inclusiva
 - Apoyo terapéutico con filtros
 - Recursos para familias y docentes
+- Favoritos de recursos guardados en este navegador
 - Directorio con búsqueda y filtros
 - Orientación y acompañamiento
 - Perfil familiar de demostración
@@ -30,18 +31,29 @@ npm run build
 
 La carpeta `out/` contiene el sitio estático.
 
+## Subida manual a GitHub
+
+El proyecto ya es un repositorio Git local en la rama `main`. Crea un repositorio vacío en tu cuenta personal, con la visibilidad que prefieras y sin inicializarlo con README, y ejecuta desde esta carpeta:
+
+```bash
+git remote add origin <URL-DEL-REPOSITORIO>
+git push -u origin main
+```
+
+Tu inicio de sesión y tus credenciales quedan bajo tu control. El repositorio local no tiene remoto configurado.
+
 ## Despliegue en Amplify
 
 1. Sube este proyecto a un repositorio de GitHub.
 2. En Amplify Hosting, crea una aplicación conectada a ese repositorio.
-3. Configura el alojamiento como **sitio estático** y confirma que el directorio de salida sea `out`. El archivo `amplify.yml` ya contiene `npm ci`, `npm run build` y `baseDirectory: out`.
+3. Configura el alojamiento como **sitio estático** en la imagen de compilación AL2023 y confirma que el directorio de salida sea `out`. El archivo `amplify.yml` selecciona Node.js 22, ejecuta `npm ci` y `npm run build`, y publica `out`.
 4. Conecta la rama `main` y despliega. No agregues una regla SPA que redirija todas las rutas a `/index.html`; Next.js genera un `index.html` por ruta.
 
 Las rutas usan barra final (`/recursos/`, etc.), compatible con las URL limpias de Amplify.
 
 ## Alcance y siguiente etapa
 
-No se necesita una base de datos para validar navegación, contenido y demanda inicial. El directorio, el perfil infantil y el plan contienen **datos ilustrativos**; no son registros reales ni recomendaciones individuales. La orientación personalizada está señalada como próxima función.
+No se necesita una base de datos para validar navegación, contenido y demanda inicial. Los favoritos se guardan en `localStorage` y pueden borrarse al limpiar los datos del navegador. El directorio, el perfil infantil y el plan contienen **datos ilustrativos**; no son registros reales ni recomendaciones individuales. La orientación personalizada está señalada como próxima función.
 
 Si el MVP demuestra uso real, el siguiente paso sería definir autenticación, consentimiento, gestión segura de datos de menores y un directorio verificado. En ese momento sí convendría añadir un backend y una base de datos. No guardamos información de menores en el navegador en esta versión.
 

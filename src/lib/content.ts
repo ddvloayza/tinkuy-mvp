@@ -1,4 +1,4 @@
-export const sections = ["conoce-tinkuy", "necesidades-educativas", "educacion-inclusiva", "apoyo-terapeutico", "recursos", "directorio", "orientacion", "mi-cuenta", "plan-personalizado"] as const;
+export const sections = ["conoce-tinkuy", "necesidades-educativas", "educacion-inclusiva", "apoyo-terapeutico", "recursos", "directorio", "orientacion", "mi-cuenta", "plan-personalizado", "favoritos"] as const;
 export type Section = (typeof sections)[number];
 export type View = "inicio" | Section;
 
@@ -26,8 +26,8 @@ export const resources = [
 ];
 
 export const services = [
-  { title: "Centro de Rehabilitación Integral", category: "Fisioterapia", location: "Lima", icon: "accessibility", tone: "mint", description: "Fisioterapia y terapia ocupacional." },
-  { title: "CETPRO Inclusión", category: "Terapia de lenguaje", location: "Lima", icon: "users", tone: "blue", description: "Comunicación y apoyo psicopedagógico." },
-  { title: "Colegio Luz y Esperanza", category: "Educación", location: "San Martín de Porres", icon: "school", tone: "peach", description: "Inicial y primaria con enfoque inclusivo." },
-  { title: "Asociación Down Perú", category: "Orientación", location: "Lima", icon: "home", tone: "lavender", description: "Acompañamiento y orientación a familias." },
+  { title: "Centro Horizonte (demo)", category: "Fisioterapia", location: "Lima", icon: "accessibility", tone: "mint", description: "Fisioterapia y terapia ocupacional." },
+  { title: "Espacio Comunica (demo)", category: "Terapia de lenguaje", location: "Lima", icon: "users", tone: "blue", description: "Comunicación y apoyo psicopedagógico." },
+  { title: "Colegio Puentes (demo)", category: "Educación", location: "San Martín de Porres", icon: "school", tone: "peach", description: "Inicial y primaria con enfoque inclusivo." },
+  { title: "Red Crecer (demo)", category: "Orientación", location: "Lima", icon: "home", tone: "lavender", description: "Acompañamiento y orientación a familias." },
 ];

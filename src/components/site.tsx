@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Accessibility, ArrowLeft, ArrowRight, Bell, BookOpen, CalendarDays, Check,
-  ChevronDown, ChevronRight, ClipboardList, Download, Eye, GraduationCap,
+  Accessibility, ArrowLeft, ArrowRight, BookOpen, CalendarDays, Check,
+  ChevronRight, ClipboardList, Download, Eye, GraduationCap,
   HandHeart, Heart, Home, Mail, MapPin, Menu, MessageCircle, Play, Puzzle,
-  Search, ShieldCheck, Sparkles, Star, Users, X,
+  Search, ShieldCheck, Sparkles, Users, X,
 } from "lucide-react";
 import { conditions, resources, services, therapies, type View } from "@/lib/content";
 
@@ -93,9 +93,19 @@ function TherapyView({ openModal }: { openModal: (modal: Modal) => void }) {
   return <><PageIntro eyebrow="Crecimiento y bienestar" title="Apoyo terapéutico" description="El acompañamiento profesional potencia el desarrollo y la autonomía de cada niño y niña." /><div className="tabs" role="group" aria-label="Filtrar terapias">{categories.map((item) => <button key={item} onClick={() => setCategory(item)} className={category === item ? "selected" : ""}>{item}</button>)}</div><div className="stack-list">{therapies.filter((item) => category === "Todos" || item.category === category).map((item) => <article className="list-card" key={item.title}><ColoredIcon name={item.icon} tone={item.tone} /><div><h3>{item.title}</h3><p>{item.description}</p></div><button className="outline-button" onClick={() => openModal({ title: item.title, description: item.description, bullets: item.steps })}>Ver más <ArrowRight size={14} /></button></article>)}</div><FooterQuote>Cada niño y niña necesita un tipo de apoyo, y cada avance cuenta. ♥</FooterQuote></>;
 }
 
-function ResourcesView({ openModal }: { openModal: (modal: Modal) => void }) {
+type Resource = (typeof resources)[number];
+function ResourceRow({ item, isFavorite, onToggle, openModal }: { item: Resource; isFavorite: boolean; onToggle: (title: string) => void; openModal: (modal: Modal) => void }) {
+  return <article className="list-card resource-card"><ColoredIcon name={item.icon} tone={item.tone} /><div className="resource-copy"><h3>{item.title}</h3><p>{item.description}</p><span className="resource-audience">Para {item.audience.toLowerCase()}</span></div><button className="outline-button" onClick={() => openModal({ title: item.title, description: item.description, bullets: item.items })}>Ver <ArrowRight size={14} /></button><button className={isFavorite ? "favorite-button active" : "favorite-button"} onClick={() => onToggle(item.title)} aria-label={isFavorite ? `Quitar ${item.title} de favoritos` : `Guardar ${item.title} en favoritos`} aria-pressed={isFavorite}><Heart size={20} fill={isFavorite ? "currentColor" : "none"} /></button></article>;
+}
+
+function ResourcesView({ openModal, favorites, onToggle }: { openModal: (modal: Modal) => void; favorites: string[]; onToggle: (title: string) => void }) {
   const [audience, setAudience] = useState("Todos");
-  return <><PageIntro eyebrow="Ideas para compartir" title="Recursos para familias y docentes" description="Materiales prácticos, guías y herramientas para fortalecer la inclusión desde casa y en el aula." /><div className="tabs" role="group" aria-label="Filtrar recursos">{["Todos", "Familias", "Docentes"].map((item) => <button key={item} onClick={() => setAudience(item)} className={audience === item ? "selected" : ""}>{item}</button>)}</div><div className="stack-list">{resources.filter((item) => audience === "Todos" || item.audience === audience).map((item) => <button className="list-card resource-card" key={item.title} onClick={() => openModal({ title: item.title, description: item.description, bullets: item.items })}><ColoredIcon name={item.icon} tone={item.tone} /><span><h3>{item.title}</h3><p>{item.description}</p></span><ChevronRight size={20} /></button>)}</div><FooterQuote>La inclusión también se construye desde casa y en el aula.</FooterQuote></>;
+  return <><PageIntro eyebrow="Ideas para compartir" title="Recursos para familias y docentes" description="Materiales prácticos, guías y herramientas para fortalecer la inclusión desde casa y en el aula." /><div className="resource-toolbar"><div className="tabs" role="group" aria-label="Filtrar recursos">{["Todos", "Familias", "Docentes"].map((item) => <button key={item} onClick={() => setAudience(item)} className={audience === item ? "selected" : ""}>{item}</button>)}</div><Link className="text-link" href="/favoritos/"><Heart size={17} /> Mis favoritos</Link></div><div className="stack-list">{resources.filter((item) => audience === "Todos" || item.audience === audience).map((item) => <ResourceRow key={item.title} item={item} isFavorite={favorites.includes(item.title)} onToggle={onToggle} openModal={openModal} />)}</div><FooterQuote>La inclusión también se construye desde casa y en el aula.</FooterQuote></>;
+}
+
+function FavoritesView({ openModal, favorites, onToggle, ready }: { openModal: (modal: Modal) => void; favorites: string[]; onToggle: (title: string) => void; ready: boolean }) {
+  const saved = resources.filter((item) => favorites.includes(item.title));
+  return <div className="account-layout"><AccountSidebar active="Favoritos" /><div className="account-content"><PageIntro eyebrow="Mi espacio familiar" title="Favoritos" description="Guarda los recursos que quieras volver a consultar. Esta selección se conserva solo en este navegador." />{!ready ? <div className="favorites-loading" role="status">Cargando favoritos…</div> : saved.length ? <div className="stack-list">{saved.map((item) => <ResourceRow key={item.title} item={item} isFavorite onToggle={onToggle} openModal={openModal} />)}</div> : <div className="favorites-empty"><Heart size={30} /><h2>Aún no guardaste recursos</h2><p>Explora los materiales y toca el corazón de los que quieras tener a mano.</p><Link className="primary-button" href="/recursos/">Explorar recursos <ArrowRight size={16} /></Link></div>}</div></div>;
 }
 
 function DirectoryView({ openModal }: { openModal: (modal: Modal) => void }) {
@@ -112,12 +122,13 @@ const accountNav = [
   { href: "/mi-cuenta/", title: "Mi perfil familiar", icon: Home }, { href: "/mi-cuenta/", title: "Mi hijo/a", icon: Users },
   { href: "/conoce-tinkuy/", title: "Conoce TINKUY", icon: Puzzle }, { href: "/educacion-inclusiva/", title: "Educación inclusiva", icon: GraduationCap },
   { href: "/apoyo-terapeutico/", title: "Apoyo terapéutico", icon: Heart }, { href: "/recursos/", title: "Recursos", icon: BookOpen },
+  { href: "/favoritos/", title: "Favoritos", icon: Heart },
   { href: "/directorio/", title: "Directorio", icon: MapPin }, { href: "/orientacion/", title: "Orientación", icon: MessageCircle },
 ];
-function AccountSidebar() { return <aside className="account-sidebar"><div className="sidebar-person"><div className="person-avatar">M</div><strong>Mi perfil familiar</strong><span>Espacio de demostración</span></div><nav aria-label="Menú del perfil">{accountNav.map((item, index) => <Link href={item.href} key={`${item.title}-${index}`} className={index === 1 ? "active" : ""}><item.icon size={18} />{item.title}</Link>)}</nav><div className="sidebar-note">✦ Juntos por una<br /> educación sin barreras <span>♥</span></div></aside>; }
+function AccountSidebar({ active }: { active: string }) { return <aside className="account-sidebar"><div className="sidebar-person"><div className="person-avatar">M</div><strong>Mi perfil familiar</strong><span>Espacio de demostración</span></div><nav aria-label="Menú del perfil">{accountNav.map((item, index) => <Link href={item.href} key={`${item.title}-${index}`} className={item.title === active ? "active" : ""}><item.icon size={18} />{item.title}</Link>)}</nav><div className="sidebar-note">✦ Juntos por una<br /> educación sin barreras <span>♥</span></div></aside>; }
 function AccountView() {
   const [tab, setTab] = useState("Información general");
-  return <div className="account-layout"><AccountSidebar /><div className="account-content"><div className="account-heading"><div><Eyebrow>Mi espacio familiar</Eyebrow><h1>Mi hijo/a</h1></div><span className="demo-badge"><ShieldCheck size={15} /> Datos de ejemplo</span></div><div className="child-card"><div className="child-avatar">👦🏽</div><div><h2>Mateo</h2><span>5 años</span><p>Parálisis cerebral infantil</p></div><span className="child-spark">✦</span></div><div className="tabs account-tabs" role="group" aria-label="Información del perfil">{["Información general", "Necesidades", "Objetivos", "Notas"].map((item) => <button key={item} onClick={() => setTab(item)} className={tab === item ? "selected" : ""}>{item}</button>)}</div>{tab === "Información general" ? <div className="profile-columns"><div className="profile-panel"><h3>Información general</h3><dl><div><CalendarDays size={18} /><dt>Edad</dt><dd>5 años</dd></div><div><Heart size={18} /><dt>Condición de referencia</dt><dd>Parálisis cerebral infantil</dd></div><div><GraduationCap size={18} /><dt>Nivel educativo</dt><dd>Inicial</dd></div><div><HandHeart size={18} /><dt>Apoyos de ejemplo</dt><dd>Fisioterapia · Lenguaje</dd></div></dl></div><div className="profile-panel observation"><h3>Observaciones</h3><p>Le gustan la música, los animales y las actividades al aire libre. Actualmente, se encuentra en proceso de atención multidisciplinaria.</p><Link className="outline-button" href="/plan-personalizado/">Ver plan personalizado</Link></div></div> : <div className="profile-panel tab-panel"><h3>{tab}</h3><p>{tab === "Necesidades" ? "Apoyos para participar en juegos, actividades de aula y momentos de comunicación." : tab === "Objetivos" ? "Promover la autonomía, la comunicación y la participación en experiencias de aprendizaje." : "Espacio de ejemplo para registrar avances y preguntas de la familia."}</p><Link className="text-link" href="/plan-personalizado/">Ver el plan de ejemplo <ArrowRight size={16} /></Link></div>}</div></div>;
+  return <div className="account-layout"><AccountSidebar active="Mi hijo/a" /><div className="account-content"><div className="account-heading"><div><Eyebrow>Mi espacio familiar</Eyebrow><h1>Mi hijo/a</h1></div><span className="demo-badge"><ShieldCheck size={15} /> Datos de ejemplo</span></div><div className="child-card"><div className="child-avatar">👦🏽</div><div><h2>Mateo</h2><span>5 años</span><p>Parálisis cerebral infantil</p></div><span className="child-spark">✦</span></div><div className="tabs account-tabs" role="group" aria-label="Información del perfil">{["Información general", "Necesidades", "Objetivos", "Notas"].map((item) => <button key={item} onClick={() => setTab(item)} className={tab === item ? "selected" : ""}>{item}</button>)}</div>{tab === "Información general" ? <div className="profile-columns"><div className="profile-panel"><h3>Información general</h3><dl><div><CalendarDays size={18} /><dt>Edad</dt><dd>5 años</dd></div><div><Heart size={18} /><dt>Condición de referencia</dt><dd>Parálisis cerebral infantil</dd></div><div><GraduationCap size={18} /><dt>Nivel educativo</dt><dd>Inicial</dd></div><div><HandHeart size={18} /><dt>Apoyos de ejemplo</dt><dd>Fisioterapia · Lenguaje</dd></div></dl></div><div className="profile-panel observation"><h3>Observaciones</h3><p>Le gustan la música, los animales y las actividades al aire libre. Actualmente, se encuentra en proceso de atención multidisciplinaria.</p><Link className="outline-button" href="/plan-personalizado/">Ver plan personalizado</Link></div></div> : <div className="profile-panel tab-panel"><h3>{tab}</h3><p>{tab === "Necesidades" ? "Apoyos para participar en juegos, actividades de aula y momentos de comunicación." : tab === "Objetivos" ? "Promover la autonomía, la comunicación y la participación en experiencias de aprendizaje." : "Espacio de ejemplo para registrar avances y preguntas de la familia."}</p><Link className="text-link" href="/plan-personalizado/">Ver el plan de ejemplo <ArrowRight size={16} /></Link></div>}<Link className="text-link account-favorites-link" href="/favoritos/"><Heart size={17} /> Ver mis recursos favoritos <ArrowRight size={16} /></Link></div></div>;
 }
 
 function PlanView() {
@@ -133,20 +144,26 @@ function PlanView() {
 
 export default function Site({ view }: { view: View }) {
   const [modal, setModal] = useState<Modal>(null);
-  useEffect(() => { if (!modal) return; const close = (event: KeyboardEvent) => { if (event.key === "Escape") setModal(null); }; window.addEventListener("keydown", close); return () => window.removeEventListener("keydown", close); }, [modal]);
-  const content = useMemo(() => {
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [favoritesReady, setFavoritesReady] = useState(false);
+  const modalCloseRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => { try { const stored = JSON.parse(window.localStorage.getItem("tinkuy:favoritos") || "[]"); if (Array.isArray(stored)) setFavorites(stored.filter((item): item is string => typeof item === "string")); } catch {} setFavoritesReady(true); }, []);
+  useEffect(() => { if (!modal) return; const previous = document.activeElement as HTMLElement | null; modalCloseRef.current?.focus(); const close = (event: KeyboardEvent) => { if (event.key === "Escape") setModal(null); if (event.key === "Tab") { const buttons = document.querySelectorAll<HTMLButtonElement>(".detail-modal button"); if (!buttons.length) return; const first = buttons[0], last = buttons[buttons.length - 1]; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } } }; window.addEventListener("keydown", close); const oldOverflow = document.body.style.overflow; document.body.style.overflow = "hidden"; return () => { window.removeEventListener("keydown", close); document.body.style.overflow = oldOverflow; previous?.focus(); }; }, [modal]);
+  const toggleFavorite = (title: string) => { const next = favorites.includes(title) ? favorites.filter((item) => item !== title) : [...favorites, title]; setFavorites(next); try { window.localStorage.setItem("tinkuy:favoritos", JSON.stringify(next)); } catch {} };
+  const content = (() => {
     switch (view) {
       case "inicio": return <HomeView />;
       case "conoce-tinkuy": return <AboutView />;
       case "necesidades-educativas": return <NeedsView openModal={setModal} />;
       case "educacion-inclusiva": return <EducationView openModal={setModal} />;
       case "apoyo-terapeutico": return <TherapyView openModal={setModal} />;
-      case "recursos": return <ResourcesView openModal={setModal} />;
+      case "recursos": return <ResourcesView openModal={setModal} favorites={favorites} onToggle={toggleFavorite} />;
       case "directorio": return <DirectoryView openModal={setModal} />;
       case "orientacion": return <OrientationView />;
       case "mi-cuenta": return <AccountView />;
       case "plan-personalizado": return <PlanView />;
+      case "favoritos": return <FavoritesView openModal={setModal} favorites={favorites} onToggle={toggleFavorite} ready={favoritesReady} />;
     }
-  }, [view]);
-  return <><Header view={view} /><main className={view === "inicio" ? "main-shell home-shell" : "main-shell inner-shell"}>{content}</main><footer className="site-footer"><Brand /><p>Hecho para construir más oportunidades de aprendizaje.</p><span>Demo MVP · 2026</span></footer><MobileNav view={view} />{modal && <div className="modal-backdrop" onClick={() => setModal(null)}><div className="detail-modal" role="dialog" aria-modal="true" aria-label={modal.title} onClick={(event) => event.stopPropagation()}><button className="modal-close" aria-label="Cerrar" onClick={() => setModal(null)}><X size={20} /></button><Eyebrow>Para seguir aprendiendo</Eyebrow><h2>{modal.title}</h2><p>{modal.description}</p>{modal.bullets && <ul>{modal.bullets.map((bullet) => <li key={bullet}><Check size={18} />{bullet}</li>)}</ul>}<button className="primary-button" onClick={() => setModal(null)}>Entendido <ArrowRight size={16} /></button></div></div>}</>;
+  })();
+  return <><a className="skip-link" href="#contenido">Saltar al contenido</a><Header view={view} /><main id="contenido" className={view === "inicio" ? "main-shell home-shell" : "main-shell inner-shell"}>{content}</main><footer className="site-footer"><Brand /><p>Hecho para construir más oportunidades de aprendizaje.</p><span>Demo MVP · 2026</span></footer><MobileNav view={view} />{modal && <div className="modal-backdrop" onClick={() => setModal(null)}><div className="detail-modal" role="dialog" aria-modal="true" aria-label={modal.title} onClick={(event) => event.stopPropagation()}><button ref={modalCloseRef} className="modal-close" aria-label="Cerrar" onClick={() => setModal(null)}><X size={20} /></button><Eyebrow>Para seguir aprendiendo</Eyebrow><h2>{modal.title}</h2><p>{modal.description}</p>{modal.bullets && <ul>{modal.bullets.map((bullet) => <li key={bullet}><Check size={18} />{bullet}</li>)}</ul>}<button className="primary-button" onClick={() => setModal(null)}>Entendido <ArrowRight size={16} /></button></div></div>}</>;
 }
