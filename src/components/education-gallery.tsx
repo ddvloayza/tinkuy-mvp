@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const photos = [
+const educationPhotos = [
   {
     src: "/images/educacion-inclusiva/actividad-colores.jpeg",
     alt: "Niño jugando con colores y materiales de aprendizaje",
@@ -25,7 +25,9 @@ const photos = [
   },
 ];
 
-export function EducationGallery() {
+export type GalleryPhoto = { src: string; alt: string; width: number; height: number };
+
+export function CoverFlowGallery({ photos, title, label }: { photos: GalleryPhoto[]; title: string; label: string }) {
   const [active, setActive] = useState(0);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
@@ -36,7 +38,7 @@ export function EducationGallery() {
   return (
     <section
       className="education-gallery"
-      aria-label="Galería de educación inclusiva"
+      aria-label={label}
       aria-roledescription="carrusel"
       onKeyDown={(event) => {
         if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
@@ -48,7 +50,7 @@ export function EducationGallery() {
       <div className="education-gallery-heading">
         <div>
           <span className="therapy-gallery-kicker">En imágenes</span>
-          <h2>Aprender de muchas maneras</h2>
+          <h2>{title}</h2>
         </div>
         <div className="education-gallery-controls">
           <span aria-live="polite">{active + 1} de {photos.length}</span>
@@ -76,7 +78,7 @@ export function EducationGallery() {
       >
         {photos.map((photo, index) => {
           const distance = (index - active + photos.length) % photos.length;
-          const position = distance === 0 ? "center" : distance === 1 ? "right" : "left";
+          const position = distance === 0 ? "center" : distance === 1 ? "right" : distance === photos.length - 1 ? "left" : "hidden";
           return (
             <button
               className="education-coverflow-card"
@@ -86,6 +88,8 @@ export function EducationGallery() {
               onClick={() => setActive(index)}
               aria-label={`Mostrar foto ${index + 1} de ${photos.length}: ${photo.alt}`}
               aria-current={index === active ? "true" : undefined}
+              aria-hidden={position === "hidden"}
+              tabIndex={position === "hidden" ? -1 : 0}
             >
               <Image src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} sizes="(max-width: 600px) 76vw, 360px" />
             </button>
@@ -97,4 +101,8 @@ export function EducationGallery() {
       </div>
     </section>
   );
+}
+
+export function EducationGallery() {
+  return <CoverFlowGallery photos={educationPhotos} title="Aprender de muchas maneras" label="Galería de educación inclusiva" />;
 }
