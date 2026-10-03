@@ -10,6 +10,7 @@ import {
   Search, ShieldCheck, Sparkles, Users, X,
 } from "lucide-react";
 import { conditions, resources, services, therapies, type View } from "@/lib/content";
+import { TherapyGallery } from "@/components/therapy-gallery";
 
 const iconMap = { accessibility: Accessibility, book: BookOpen, clipboard: ClipboardList, eye: Eye, hand: HandHeart, heart: Heart, home: Home, message: MessageCircle, play: Play, puzzle: Puzzle, school: GraduationCap, users: Users };
 type IconName = keyof typeof iconMap;
@@ -90,7 +91,7 @@ function EducationView({ openModal }: { openModal: (modal: Modal) => void }) {
 
 function TherapyView({ openModal }: { openModal: (modal: Modal) => void }) {
   const [category, setCategory] = useState("Todos"); const categories = ["Todos", "Fisioterapia", "Terapia de lenguaje", "Psicología", "Terapia ocupacional"];
-  return <><PageIntro eyebrow="Crecimiento y bienestar" title="Apoyo terapéutico" description="El acompañamiento profesional potencia el desarrollo y la autonomía de cada niño y niña." /><div className="tabs" role="group" aria-label="Filtrar terapias">{categories.map((item) => <button key={item} onClick={() => setCategory(item)} className={category === item ? "selected" : ""}>{item}</button>)}</div><div className="stack-list">{therapies.filter((item) => category === "Todos" || item.category === category).map((item) => <article className="list-card" key={item.title}><ColoredIcon name={item.icon} tone={item.tone} /><div><h3>{item.title}</h3><p>{item.description}</p></div><button className="outline-button" onClick={() => openModal({ title: item.title, description: item.description, bullets: item.steps })}>Ver más <ArrowRight size={14} /></button></article>)}</div><FooterQuote>Cada niño y niña necesita un tipo de apoyo, y cada avance cuenta. ♥</FooterQuote></>;
+  return <><PageIntro eyebrow="Crecimiento y bienestar" title="Apoyo terapéutico" description="El acompañamiento profesional potencia el desarrollo y la autonomía de cada niño y niña." /><div className="tabs" role="group" aria-label="Filtrar terapias">{categories.map((item) => <button key={item} onClick={() => setCategory(item)} className={category === item ? "selected" : ""}>{item}</button>)}</div><div className="stack-list">{therapies.filter((item) => category === "Todos" || item.category === category).map((item) => <article className="list-card" key={item.title}><ColoredIcon name={item.icon} tone={item.tone} /><div><h3>{item.title}</h3><p>{item.description}</p></div><button className="outline-button" onClick={() => openModal({ title: item.title, description: item.description, bullets: item.steps })}>Ver más <ArrowRight size={14} /></button></article>)}</div><TherapyGallery /><FooterQuote>Cada niño y niña necesita un tipo de apoyo, y cada avance cuenta. ♥</FooterQuote></>;
 }
 
 type Resource = (typeof resources)[number];
