@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { conditions, resources, services, therapies, type View } from "@/lib/content";
 import { TherapyGallery } from "@/components/therapy-gallery";
+import { EducationGallery } from "@/components/education-gallery";
 
 const iconMap = { accessibility: Accessibility, book: BookOpen, clipboard: ClipboardList, eye: Eye, hand: HandHeart, heart: Heart, home: Home, message: MessageCircle, play: Play, puzzle: Puzzle, school: GraduationCap, users: Users };
 type IconName = keyof typeof iconMap;
@@ -86,7 +87,7 @@ function EducationView({ openModal }: { openModal: (modal: Modal) => void }) {
     { icon: "heart", tone: "peach", title: "Tips para una inclusión exitosa", text: "Pequeñas acciones para construir pertenencia cada día." },
     { icon: "message", tone: "lavender", title: "Preguntas frecuentes", text: "Respuestas iniciales para seguir explorando." },
   ];
-  return <><PageIntro eyebrow="Aprender juntos" title="Educación inclusiva" description="Conoce tus derechos, las opciones educativas y cómo promover una escuela que valore la diversidad." /><div className="education-grid">{topics.map((item) => <button className={`education-card ${item.tone}`} key={item.title} onClick={() => openModal({ title: item.title, description: item.text, bullets: ["Escucha las necesidades y preferencias del niño o la niña.", "Acuerda apoyos concretos con la escuela y revísalos periódicamente.", "Celebra la participación y los avances, grandes o pequeños."] })}><ColoredIcon name={item.icon} tone={item.tone} size={34} /><strong>{item.title}</strong><span>Explorar <ArrowRight size={14} /></span></button>)}</div><FooterQuote>La inclusión no es un favor, es un derecho. ♥</FooterQuote></>;
+  return <><PageIntro eyebrow="Aprender juntos" title="Educación inclusiva" description="Conoce tus derechos, las opciones educativas y cómo promover una escuela que valore la diversidad." /><div className="education-grid">{topics.map((item) => <button className={`education-card ${item.tone}`} key={item.title} onClick={() => openModal({ title: item.title, description: item.text, bullets: ["Escucha las necesidades y preferencias del niño o la niña.", "Acuerda apoyos concretos con la escuela y revísalos periódicamente.", "Celebra la participación y los avances, grandes o pequeños."] })}><ColoredIcon name={item.icon} tone={item.tone} size={34} /><strong>{item.title}</strong><span>Explorar <ArrowRight size={14} /></span></button>)}</div><EducationGallery /><FooterQuote>La inclusión no es un favor, es un derecho. ♥</FooterQuote></>;
 }
 
 function TherapyView({ openModal }: { openModal: (modal: Modal) => void }) {
