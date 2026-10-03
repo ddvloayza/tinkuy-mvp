@@ -20,7 +20,7 @@ export const therapies = [
 
 export const resources = [
   { title: "Guías y orientaciones", audience: "Familias", icon: "clipboard", tone: "mint", description: "Ideas prácticas para acompañar en casa, conversar con la escuela y celebrar avances.", items: ["Crear una rutina visual", "Preparar una reunión con la escuela", "Observar fortalezas e intereses"] },
-  { title: "Videos y talleres", audience: "Familias", icon: "play", tone: "peach", description: "Sesiones breves para descubrir estrategias de aprendizaje y bienestar.", items: ["Comunicación en familia", "Juego que incluye", "Autonomía paso a paso"] },
+  { title: "Videos y talleres", audience: "Familias", icon: "play", tone: "peach", description: "Videos breves de juego, movimiento y participación en el aula.", items: ["Juego y participación", "Movimiento en el aula"] },
   { title: "Material didáctico", audience: "Docentes", icon: "book", tone: "yellow", description: "Actividades adaptables, apoyos visuales y plantillas para el aula.", items: ["Agenda visual", "Opciones para responder", "Lectura en varios formatos"] },
   { title: "Historias que inspiran", audience: "Docentes", icon: "heart", tone: "lavender", description: "Experiencias para abrir conversaciones sobre participación y pertenencia.", items: ["Escuchar a cada estudiante", "Construir acuerdos de aula", "Celebrar distintas maneras de aprender"] },
 ];
